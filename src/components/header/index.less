@@ -1,0 +1,35 @@
+.header {
+    padding: 0 20px;
+    background-color: #fff;
+  .header-top {
+    height: 60px;
+    line-height: 60px;
+    text-align: right;
+    border-bottom: 1px solid #f9c700;
+    .logout-btn{
+        margin-left: 10px;
+    }
+  }
+  .header-bottom {
+    height: 40px;
+    line-height: 40px;
+    .breadcrumb-title{
+      text-align: center;
+      &::after{
+        content: '';
+        position: absolute;
+        right: 57px;
+        bottom: -7px;
+        border-top: 9px solid #fff;
+        border-left: 9px solid transparent;
+        border-right: 9px solid transparent;
+      }
+    }
+    .bottom-right{
+        text-align: right;
+        .weather{
+            margin-left: 10px;
+        }
+    }
+  }
+}
