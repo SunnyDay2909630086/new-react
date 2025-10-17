@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Menu, Image } from "antd";
+import { useNavigate } from 'react-router-dom';
 import menuList from '../../config/menuConfig';
 import "./index.less";
 
@@ -7,12 +8,13 @@ const Sidebar = () => {
   const [current, setCurrent] = useState('/home');
   const [openKeys, setOpenKeys] = useState(['/home']);
   
+  const navigate = useNavigate();
    // 处理菜单项点击
   const handleMenuClick = (e) => {
     console.log('Clicked menu item:', e.key);
     setCurrent(e.key);
     // 这里可以添加路由跳转逻辑
-    // history.push(e.key);
+    navigate(e.key);
   };
   // 处理子菜单展开/收起
   const handleOpenChange = (keys) => {
