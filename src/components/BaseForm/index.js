@@ -1,82 +1,139 @@
-import React, { useState } from 'react';
-import { Button, Form, Input, Select } from 'antd';
+import React from 'react';
+import { Button, Form, Input, Select, Checkbox, DatePicker } from 'antd';
+const { RangePicker } = DatePicker;
 const { Option } = Select;
-const PriceInput = props => {
-  const { id, value = {}, onChange } = props;
-  const [number, setNumber] = useState(0);
-  const [currency, setCurrency] = useState('rmb');
-  const triggerChange = changedValue => {
-    onChange?.({ number, currency, ...value, ...changedValue });
-  };
-  const onNumberChange = e => {
-    const newNumber = Number.parseInt(e.target.value || '0', 10);
-    if (Number.isNaN(number)) {
-      return;
-    }
-    if (!('number' in value)) {
-      setNumber(newNumber);
-    }
-    triggerChange({ number: newNumber });
-  };
-  const onCurrencyChange = newCurrency => {
-    if (!('currency' in value)) {
-      setCurrency(newCurrency);
-    }
-    triggerChange({ currency: newCurrency });
-  };
-  return (
-    <span id={id}>
-      <Input
-        type="text"
-        value={value.number || number}
-        onChange={onNumberChange}
-        style={{ width: 100 }}
-      />
-      <Select
-        value={value.currency || currency}
-        style={{ width: 80, margin: '0 8px' }}
-        onChange={onCurrencyChange}
-      >
-        <Option value="rmb">RMB</Option>
-        <Option value="dollar">Dollar</Option>
-      </Select>
-    </span>
-  );
-};
 
-const BaseForm = () => {
-    const initFormList = ()=> {
-        const {getFieldDecorator} = this.props.form;
+const BaseForm = (props) => {
+  const [form] = Form.useForm();
+  const { formList = [], filterSubmit } = props;
+
+  const initFormList = () => {
+    console.log(props, '-------------props');
+    
+    if (!formList || formList.length === 0) {
+      return null;
     }
-    const formList = this.props.formList;
-  const onFinish = values => {
-    console.log('Received values from form: ', values);
+
+    return formList.map((item) => {
+      const {
+        label,
+        field,
+        initialValue,
+        width,
+        placeholder = '',
+        type = 'input',
+        list = []
+      } = item;
+
+      // 公共的 Form.Item 属性
+      const formItemProps = {
+        name: field,
+        label: label,
+        initialValue: initialValue,
+        style: { width: width }
+      };
+
+      switch (type) {
+        case 'datePicker':
+          return (
+            <Form.Item key={field} {...formItemProps} style={{ width: '350px' }}>
+              <RangePicker
+                showTime={{ format: 'HH:mm' }}
+                format="YYYY-MM-DD HH:mm"
+                style={{ width: '260px' }}
+              />
+            </Form.Item>
+          );
+
+        case 'select':
+          return (
+            <Form.Item key={field} {...formItemProps} style={{ width: '150px' }}>
+              <Select
+                style={{ width: '80px' }}
+                placeholder={placeholder}
+              >
+                {list.map((listItem) => (
+                  <Option key={listItem.id }  // 确保 key 是唯一的
+                    value={ listItem.value}>
+                    {listItem.name}
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
+          );
+
+        case 'input':
+          return (
+            <Form.Item key={field} {...formItemProps}>
+              <Input
+                type="text"
+                style={{ width: width }}
+                placeholder={placeholder}
+              />
+            </Form.Item>
+          );
+
+        case 'checkbox':
+          return (
+            <Form.Item 
+              key={field}
+              {...formItemProps}
+              valuePropName="checked"  // 专门用于 Checkbox
+            >
+              <Checkbox>{label}</Checkbox>
+            </Form.Item>
+          );
+
+        default:
+          return (
+            <Form.Item {...formItemProps}>
+              <Input
+                type="text"
+                style={{ width: width }}
+                placeholder={placeholder}
+              />
+            </Form.Item>
+          );
+      }
+    });
   };
-//   const checkPrice = (_, value) => {
-//     if (value.number > 0) {
-//       return Promise.resolve();
-//     }
-//     return Promise.reject(new Error('Price must be greater than zero!'));
-//   };
+
+  const handleSubmit = (values) => {
+    console.log('Received values from form: ', values);
+    filterSubmit && filterSubmit(values);
+  };
+
+  const handleReset = () => {
+    form.resetFields();
+  };
+
   return (
     <Form
+      form={form}
       name="customized_form_controls"
       layout="inline"
-      onFinish={onFinish}
-      initialValues={{
-        price: {
-          number: 0,
-          currency: 'rmb',
-        },
-      }}
+      onFinish={handleSubmit}
+      autoComplete="off"
     >
-      <Form.Item name="price" label="Price">
-        {/* <PriceInput /> */}
-      </Form.Item>
+      {initFormList()}
+      
       <Form.Item>
-        <Button type="primary" htmlType="submit"> 查询 </Button>
+        <Button 
+          type="primary" 
+          htmlType="submit" 
+          style={{ margin: '0 20px' }}
+        >
+          查询
+        </Button>
+        <Button 
+          htmlType="button" 
+          onClick={handleReset}
+        >
+          重置
+        </Button>
       </Form.Item>
     </Form>
   );
 };
+
 export default BaseForm;
