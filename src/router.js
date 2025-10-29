@@ -4,11 +4,11 @@ import App from './App.js';
 import Login from  './pages/login.js';
 import Admin from './admin.js';    
 import Home from './pages/home/index';
-
 import UIButtons from './pages/UI/buttons.js';
 import UITabs from './pages/UI/tabs.js';
 import UICarousel from './pages/UI/carousel.js';
 import OrderList from './pages/order/index.js';
+import BikeMap from './pages/bikeMap/index.js';
 import NotFound from './pages/notFound.js';
 
 export default class IRouter extends React.Component {
@@ -28,6 +28,7 @@ export default class IRouter extends React.Component {
                                     <Route path="carousel" element={<UICarousel />} />
                                 </Route>
                                 <Route path="order" element={<OrderList />} />
+                                <Route path="bikeMap" element={<BikeMap />} />
                                 <Route element={<NotFound />} />
                             </Route>
                     </Routes>

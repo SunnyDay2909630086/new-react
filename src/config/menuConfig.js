@@ -102,7 +102,7 @@ const menuList = [
     },
     {
         label:'车辆地图',
-        key:'/bikeMap'
+        key:'/admin/bikeMap'
     },
     {
         label:'图标',

@@ -2,11 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Table, Card, Button, Alert, Tag, Descriptions } from 'antd';
 import BaseForm from '../../components/BaseForm';
 import { useList } from '../../hooks/useList';
-// import axios from "axios";  
-// import Axios from '../../axios/index';
-// import { userAPI } from '../../service/api';
-
-const dataSource = [];
 
 const columns = [
   {
@@ -41,6 +36,8 @@ const OrderList = () => {
     fetchList,
     handlePageChange
   } = useList({
+    url: '/mock',
+    method: 'get',
     page: 1,
     pageSize: 10
   });
@@ -48,7 +45,6 @@ const OrderList = () => {
   useEffect(() => {
       fetchList();
     console.log(list, '---------list');
-    
   }, []);
 
   const params = {
@@ -102,10 +98,9 @@ const OrderList = () => {
   // if (loading) return <div>加载中...</div>;
 
   const filterSubmit = (params) => {
-    console.log('请求进来了吗');
     params = params;
-    // getrequestList();
-    
+    fetchList(params);
+
   }
 
   return (
