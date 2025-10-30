@@ -6,7 +6,7 @@ import axios from 'axios';
 
 const BikeMapList = () => {
   const mapRef = useRef(null);
-  const [map, setMap] = useState(null);
+  let [map, setMap] = useState(null);
   const [status, setStatus] = useState('loading');
   let isMounted = true;
   const {
@@ -113,49 +113,78 @@ const fetchResult = () => {
     if (!isMounted) return;
 
     try {
+      console.log('成功');
       setStatus('loading');
       await initAMap();
       if (!isMounted) return;
       const list = res.route_list || [];
-        // console.log(list[0].split(','), 'result');
-      map = new window.AMap.Map(mapRef.current, {
-        zoom: 11,
-        center: [116.397428, 39.90923]
-      });
-      let gps1 = list[0].split(',');  //起点
-      let gps2 = list[list.length - 1].split(',');  //终点
-      let startPoint = [gps1[0], gps1[1]];   //起点坐标点，gps1[0]为经度，gps1[1]为纬度
-      let endPoint = [gps2[0], gps2[1]];   //终点坐标点，gps2[0]为经度，gps2[1]为纬度 
-       // 创建起点标记
-    const startMarker = new window.AMap.Marker({
-      position: startPoint,
-      icon: 'https://webapi.amap.com/theme/v1.3/markers/n/start.png',
-      title: '起点：天安门',
-      offset: new window.AMap.Pixel(-13, -30)
-    });
-    // 创建终点标记
-    const endMarker = new window.AMap.Marker({
-      position: endPoint,
-      icon: 'https://webapi.amap.com/theme/v1.3/markers/n/end.png',
-      title: '终点：故宫',
-      offset: new window.AMap.Pixel(-13, -30)
-    });
-    // 将起点和终点标记添加到地图上
-    map.add([startMarker, endMarker]);
-      if (isMounted) {
-        setMap(map);
-        setStatus('success');
-      }
-      // 绘制路线
-      const polyline = new window.AMap.Polyline({
-        path: [startPoint, endPoint],
-        strokeColor: "#3366FF",
-        strokeWeight: 6,
-        strokeStyle: "solid"
-      });
-      map.add(polyline);
-      map.setFitView(); // 调整视野
+        console.log(res, '----------res');
+        setTimeout(() => {
+          map = new window.AMap.Map(mapRef.current, {
+            zoom: 11,
+            center: [116.397428, 39.90923]
+          });
+          setMap(map);
+          let gps1 = list[0].split(',');  //起点
+          let gps2 = list[list.length - 1].split(',');  //终点
+          let startPoint = [gps1[0], gps1[1]];   //起点坐标点，gps1[0]为经度，gps1[1]为纬度
+          let endPoint = [gps2[0], gps2[1]];   //终点坐标点，gps2[0]为经度，gps2[1]为纬度 
+          // console.log(startPoint, endPoint, 'startPoint, endPoint');
+          
+          // 创建起点标记
+        const startMarker = new window.AMap.Marker({
+          position: startPoint,
+          content: '<div style="width: 20px; height: 20px;"><img src="/assets/start_point.png" style="width: 100%; height: 100%;"></div>',
+          title: '起点：天安门',
+          offset: new window.AMap.Pixel(-13, -30)
+        });
+        // 创建终点标记
+        const endMarker = new window.AMap.Marker({
+          position: endPoint,
+          content: '<div style="width: 20px; height: 20px;"><img src="/assets/end_point.png" style="width: 100%; height: 100%;"></div>',
+          title: '终点：故宫',
+          offset: new window.AMap.Pixel(-13, -30)
+        });
+        
+        // 将起点和终点标记添加到地图上
+        map.add([startMarker, endMarker]);
+          if (isMounted) {
+            setMap(map);
+            setStatus('success');
+          }
+          // 绘制路线
+          const polyline = new window.AMap.Polyline({
+            path: [startPoint, ["116.353101,40.053699"], ["116.374086,40.017626"], endPoint],
+            strokeColor: "#3366FF",
+            strokeWeight: 3,
+            strokeStyle: "solid"
+          });
+          map.add(polyline);
+          // 调整地图视野到折线范围
+          map.setFitView(); 
+
+          // 绘制服务区
+          let servicePointList = [];
+          let serviceList = res.service_list || [];
+          serviceList.forEach((item, index)=> {
+            servicePointList.push([item.lon, item.lat]);
+          });
+          servicePointList.forEach((point, index)=> {
+          let marker = new window.AMap.Marker({
+            position: point,
+            title: '服务区 ' + (index + 1),
+            content: '<div style="width: 20px; height: 20px;"><img src="/assets/bike.jpg" style="width: 100%; height: 100%;"></div>',
+            offset: new window.AMap.Pixel(-10, -10)
+          });
+          
+          map.add(marker);
+        });
+
+        }, 1000);
+      
+      // 调整视野
     } catch (error) {
+      console.log('失败');
       if (isMounted) {
           console.warn('地图初始化遇到小问题:', error.message);
           setStatus('success'); // 即使有错误也标记为成功，因为地图核心功能正常
