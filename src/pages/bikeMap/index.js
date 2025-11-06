@@ -1,26 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Table, Card, Button, Alert, Tag, Descriptions } from 'antd';
 import BaseForm from '../../components/BaseForm';
-import { useList } from '../../hooks/useList';
-import axios from 'axios';
+import { useRequestMethods } from '../../utils/request';
 
 const BikeMapList = () => {
   const mapRef = useRef(null);
   let [map, setMap] = useState(null);
   const [status, setStatus] = useState('loading');
-  let isMounted = true;
-  const {
-      list,
-      rawData,
-      pagination,
-      loading,
-      error,
-      fetchList,
-    } = useList({
-      url: '/bikeMapList',
-      method: 'get',
-    });
+  const [users, setUsers] = useState([]);
+  const [resData, setResData] = useState({});
   const [total, setTotal] = useState(0);
+  const { get, post, loading, error } = useRequestMethods();
+  
+  let isMounted = true;
 
   const params = {
     page: 1
@@ -64,27 +56,24 @@ const BikeMapList = () => {
     }
   ];
 
-useEffect(() => {
-  fetchResult()
-}, []);
-
-const fetchResult = () => {
-    // 暂时用最直接的请求方法
-    axios.get('https://mock.mengxuegu.com/mock/68f9b5a66999e863c862c5fc/example/bikeMapList')
-    .then(response => {
-      if(response.data.data.code == 0){
-        setTotal(response.data.data.result.total_count);
-        renderAMap(response.data.data.result);
+  const getResult = async () => {
+    const data = await get('/bikeMap/list');
+    // console.log(data, '----------data');
+    if(data.code == 0){
+        setTotal(data.result.total_count);
+        renderAMap(data.result);
+      }else{
+        setStatus('error');
+        console.error('Error:', error);
       }
-    })
-    .catch(error => {
-      console.error('Error:', error);
-    });
-  }
+  };
+
+  useEffect(() => {
+    getResult();
+  }, []);
 
   const filterSubmit = (params) => {
     params = params;
-    fetchList(params);
   }
 
   const initAMap = () => {
@@ -118,7 +107,7 @@ const fetchResult = () => {
       await initAMap();
       if (!isMounted) return;
       const list = res.route_list || [];
-        console.log(res, '----------res');
+        // console.log(res, '----------res');
         setTimeout(() => {
           map = new window.AMap.Map(mapRef.current, {
             zoom: 11,
@@ -130,7 +119,6 @@ const fetchResult = () => {
           let startPoint = [gps1[0], gps1[1]];   //起点坐标点，gps1[0]为经度，gps1[1]为纬度
           let endPoint = [gps2[0], gps2[1]];   //终点坐标点，gps2[0]为经度，gps2[1]为纬度 
           // console.log(startPoint, endPoint, 'startPoint, endPoint');
-          
           // 创建起点标记
         const startMarker = new window.AMap.Marker({
           position: startPoint,

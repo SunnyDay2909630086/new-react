@@ -8,6 +8,7 @@ import UIButtons from './pages/UI/buttons.js';
 import UITabs from './pages/UI/tabs.js';
 import UICarousel from './pages/UI/carousel.js';
 import OrderList from './pages/order/index.js';
+import UsersList from './pages/users/index.js';
 import BikeMap from './pages/bikeMap/index.js';
 import NotFound from './pages/notFound.js';
 
@@ -28,6 +29,7 @@ export default class IRouter extends React.Component {
                                     <Route path="carousel" element={<UICarousel />} />
                                 </Route>
                                 <Route path="order" element={<OrderList />} />
+                                <Route path="user" element={<UsersList />} />
                                 <Route path="bikeMap" element={<BikeMap />} />
                                 <Route element={<NotFound />} />
                             </Route>

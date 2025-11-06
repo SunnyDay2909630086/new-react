@@ -1,7 +1,7 @@
 import React from "react";
 import { Row, Col, Button } from "antd";
 import "./index.less";
-import Utils from '../../utils/utils';
+import Utils from '../../utils/index';
 
 export default class Header extends React.Component {
   state = {}

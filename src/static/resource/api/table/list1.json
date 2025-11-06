@@ -13,8 +13,8 @@
       "address": "北京市海淀区",
       "time": "09:00:00"
     }],
-    page: 1,
-    page_size: 10,
-    total_count: 30
+    "page": 1,
+    "page_size": 10,
+    "total_count": 30
   }
 }
