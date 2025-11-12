@@ -4,17 +4,17 @@ import { MailOutlined } from '@ant-design/icons';
 const menuList = [
     {
         label:'首页',
-        key:'/admin/home',
+        key:'/home',
         icon:<MailOutlined/>
     },
     {
         label:'UI',
-        key:'/admin/ui',
+        key:'/ui',
         children:[
 
             {
                 label:'按钮',
-                key:'/admin/ui/buttons',
+                key:'/ui/buttons',
             },
             {
                 label:'弹框',
@@ -34,7 +34,7 @@ const menuList = [
             },
             {
                 label:'Tab页签',
-                key:'/admin/ui/tabs',
+                key:'/ui/tabs',
             },
             {
                 label:'图片画廊',
@@ -42,7 +42,7 @@ const menuList = [
             },
             {
                 label:'轮播图',
-                key:'/admin/ui/carousel',
+                key:'/ui/carousel',
             }
         ]
     },
@@ -84,7 +84,7 @@ const menuList = [
     },
     {
         label:'订单管理',
-        key:'/admin/order',
+        key:'/order',
         // children:[
         //     {
         //         label:'订单详情',
@@ -98,11 +98,11 @@ const menuList = [
     },
     {
         label:'员工管理',
-        key:'/admin/user'
+        key:'/user'
     },
     {
         label:'车辆地图',
-        key:'/admin/bikeMap'
+        key:'/bikeMap'
     },
     {
         label:'图标',

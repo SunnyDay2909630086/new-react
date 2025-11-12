@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { Table, Card, Button, Alert, Tag, Descriptions } from 'antd';
+import { useState, useEffect } from 'react';
+import { Table, Card, Button, Alert } from 'antd';
 import BaseForm from '../../components/BaseForm';
-import { useRequestMethods } from '../../utils/request';
+import { getOrderList } from '../../api/index';
 
 const OrderList = () => {
   const columns = [
@@ -38,39 +38,42 @@ const OrderList = () => {
 ];
    const [orderList, setOrderList] = useState([]);
     const [resData, setResData] = useState({});
-    const { get, post, loading, error } = useRequestMethods();
   
-  const fetchList = async () => {
+  const fetchList = async ( arg = {}) => {
       let resList = [];
-      let res = {};
+      let data = {};
     const params = {
+      ...arg,
       page: resData.page || 1,
       page_size: resData.page_size || 10,
     };
-    const data = await get('/order/list', params);
-    res = data.result || {};
-    setResData(res);
-    resList = data.result.item_list.map((item, index) => ({
+    await getOrderList(params).then((res) => {
+      // console.log(res, '------------res');
+      if(res.code === 0){
+        data = res.result || {};
+        resList = data.item_list.map((item, index) => ({
           ...item,
           key: index // 确保有唯一的 key 
         }));
-      setOrderList(resList);
+        setResData(data);
+        setOrderList(resList);
+      }
+    }).catch((err) => {
+        Alert.error(err || '获取订单列表失败');
+    })
   };
 
   useEffect(() => {
       fetchList();
   }, []);
 
-  const params = {
-    page: 1
-  }
   const formList = [
     {
       type: 'select',
       label: '城市',
       field: 'city',
       placeholder: '全部',
-      initialValue: '1',
+      initialValue: '0',
       width: 162,
       list: [
         {id: '0', name: '全部'},
@@ -93,7 +96,7 @@ const OrderList = () => {
       label: '订单状态',
       field: 'orderStatus',
       placeholder: '全部',
-      initialValue: '1',
+      initialValue: '0',
       width: 162,
       list: [
         {id: '0', name: '全部'},
@@ -110,43 +113,35 @@ const OrderList = () => {
     fetchList();
   };
 
-  const filterSubmit = (params) => {
-    params = params;
-    fetchList(params);
+  const filterSubmit = (arg) => {
+    // console.log(arg, '----------arg');
+    fetchList(arg);
   }
 
-  if (loading) return <div>加载中...</div>;
-  if (error) return <div>错误: {error}</div>;
-
   return (
-     <Card title="订单列表" >
-      {error && (
-        <Alert
-          message="请求错误"
-          description={error.message}
-          type="error"
-          showIcon
-          style={{ marginBottom: 16 }}
+    <div>
+      <Card>
+        <BaseForm formList={formList} filterSubmit={filterSubmit} />
+      </Card>
+      <Card title="订单列表" >
+        <Button type='primary' style={{ marginRight: '10px'}}>订单详情</Button>
+        <Button type='primary'>结束订单</Button>
+        <Table
+          columns={columns}
+          dataSource={orderList}  
+          pagination={{
+            current: resData.page || 1,
+            pageSize: resData.page_size || 10,
+            total: resData.total_count || 0,
+            showTotal: (total, range) => 
+              `共 ${total} 条`
+          }}
+          onChange={handlePageChange}
+          rowKey='key'
+          locale={{ emptyText: '暂无数据' }}
         />
-      )}
-      <Button type='primary' style={{ marginRight: '10px'}}>订单详情</Button>
-      <Button type='primary'>结束订单</Button>
-      <Table
-        columns={columns}
-        dataSource={orderList}  // 使用安全的数据源
-        loading={loading}
-        pagination={{
-          current: resData.page || 1,
-          pageSize: resData.page_size || 10,
-          total: resData.total_count || 0,
-          showTotal: (total, range) => 
-            `共 ${total} 条`
-        }}
-        onChange={handlePageChange}
-        rowKey='key'
-        locale={{ emptyText: '暂无数据' }}
-      />
-    </Card>
+      </Card>
+    </div>
   );
 };
 

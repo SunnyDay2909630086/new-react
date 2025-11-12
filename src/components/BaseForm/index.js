@@ -8,8 +8,7 @@ const BaseForm = (props) => {
   const { formList = [], filterSubmit } = props;
 
   const initFormList = () => {
-    console.log(props, '-------------props');
-    
+    // console.log(props, '-------------props');
     if (!formList || formList.length === 0) {
       return null;
     }
@@ -99,7 +98,7 @@ const BaseForm = (props) => {
   };
 
   const handleSubmit = (values) => {
-    console.log('Received values from form: ', values);
+    // console.log('Received values from form: ', values);
     filterSubmit && filterSubmit(values);
   };
 
@@ -116,21 +115,9 @@ const BaseForm = (props) => {
       autoComplete="off"
     >
       {initFormList()}
-      
       <Form.Item>
-        <Button 
-          type="primary" 
-          htmlType="submit" 
-          style={{ margin: '0 20px' }}
-        >
-          查询
-        </Button>
-        <Button 
-          htmlType="button" 
-          onClick={handleReset}
-        >
-          重置
-        </Button>
+        <Button type="primary" htmlType="submit" style={{ margin: '0 20px' }}>查询</Button>
+        <Button htmlType="button" onClick={handleReset}>重置</Button>
       </Form.Item>
     </Form>
   );

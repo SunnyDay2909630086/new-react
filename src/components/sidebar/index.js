@@ -11,7 +11,7 @@ const Sidebar = () => {
   const navigate = useNavigate();
    // 处理菜单项点击
   const handleMenuClick = (e) => {
-    console.log('Clicked menu item:', e.key);
+    // console.log('Clicked menu item:', e.key);
     setCurrent(e.key);
     // 这里可以添加路由跳转逻辑
     navigate(e.key);

@@ -1,32 +1,29 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Row, Col, Button } from "antd";
 import "./index.less";
 import Utils from '../../utils/index';
+import { useAuth } from '../../api/authContext';
 
-export default class Header extends React.Component {
-  state = {}
-  componentWillUnmount() {
-    this.setState({
-      userName: '河畔一角',
-    });
-
+const Header = () => {
+  const [userName, setUserName] = useState('河畔一角');
+  const [sysTime, setSysTime] = useState('');
+  const { logout } = useAuth();
+  useEffect(() => {
     setInterval(() => {
       let sysTime = Utils.formateDate(Date.now());
-      this.setState({
-        sysTime,
-      });
+      setSysTime(sysTime);
     }, 1000);
-    
-
+  }, []);
+  const goLogout = () => {
+    logout();
   }
-  render() {
     return (
       <div className="header">
         <Row className="header-top">
           <Col span={24} >
-            <span>欢迎，{this.state.userName}</span>
+            <span>欢迎，{userName}</span>
             <span>
-              <Button type="primary" size="small" className="logout-btn">退出</Button>
+              <Button type="primary" size="small" className="logout-btn" onClick={goLogout}>退出</Button>
             </span>
           </Col>
         </Row>
@@ -35,12 +32,13 @@ export default class Header extends React.Component {
             首页
           </Col>
           <Col span={20} className="bottom-right">
-            <span>{this.state.sysTime}</span>
+            <span>{sysTime}</span>
             <span className="weather">晴转多云
             </span>
           </Col>
         </Row>
       </div>
     );
-  }
 }
+
+export default Header;

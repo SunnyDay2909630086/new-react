@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Card, Button, Alert, Tag, Descriptions } from 'antd';
-import { useRequestMethods } from '../../utils/request';
+// import { useRequestMethods } from '../../utils/old-request';
+import { getUsersList } from '../../api/index';
 
 const columns = [
   {
@@ -43,7 +44,7 @@ const columns = [
 const UsersList = () => {
   const [users, setUsers] = useState([]);
   const [resData, setResData] = useState({});
-  const { get, post, loading, error } = useRequestMethods();
+  // const { get, post, loading, error } = useRequestMethods();
 
   const loadUsers = async () => {
       let resList = [];
@@ -53,7 +54,7 @@ const UsersList = () => {
       page: resData.page || 1,
       page_size: resData.page_size || 10,
     };
-    const data = await get('/usersTable/list', params);
+    const data = await getUsersList(params);
     res = data.result || {};
     setResData(res);
     resList = data.result.list.map((item, index) => ({
@@ -83,12 +84,12 @@ const UsersList = () => {
     loadUsers();
   };
 
-  if (loading) return <div>加载中...</div>;
-  if (error) return <div>错误: {error}</div>;
+  // if (loading) return <div>加载中...</div>;
+  // if (error) return <div>错误: {error}</div>;
 
   return (
      <Card  title="员工列表" >
-      {error && (
+      {/* {error && (
         <Alert
           message="请求错误"
           description={error.message}
@@ -96,17 +97,15 @@ const UsersList = () => {
           showIcon
           style={{ marginBottom: 16 }}
         />
-      )}
+      )} */}
       <Table
         columns={columns}
         dataSource={users}
-        loading={loading}
+        // loading={loading}
         pagination={{
           current: resData.page || 1,
           pageSize: resData.page_size || 10,
           total: resData.total_count || 0,
-          // showSizeChanger: true,
-          // showQuickJumper: true,
           showTotal: (total, range) => 
             `共 ${total} 条`
         }}

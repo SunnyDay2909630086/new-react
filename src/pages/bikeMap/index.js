@@ -1,22 +1,16 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Table, Card, Button, Alert, Tag, Descriptions } from 'antd';
+import { useState, useEffect, useRef } from 'react';
+import { Card, Alert } from 'antd';
 import BaseForm from '../../components/BaseForm';
-import { useRequestMethods } from '../../utils/request';
+import { getBikeMap } from '../../api/index';
 
 const BikeMapList = () => {
   const mapRef = useRef(null);
   let [map, setMap] = useState(null);
   const [status, setStatus] = useState('loading');
-  const [users, setUsers] = useState([]);
-  const [resData, setResData] = useState({});
   const [total, setTotal] = useState(0);
-  const { get, post, loading, error } = useRequestMethods();
   
   let isMounted = true;
 
-  const params = {
-    page: 1
-  }
   const formList = [
     {
       type: 'select',
@@ -56,15 +50,15 @@ const BikeMapList = () => {
     }
   ];
 
-  const getResult = async () => {
-    const data = await get('/bikeMap/list');
+  const getResult = async (arg) => {
+    const data = await getBikeMap(arg);
     // console.log(data, '----------data');
     if(data.code == 0){
         setTotal(data.result.total_count);
         renderAMap(data.result);
       }else{
         setStatus('error');
-        console.error('Error:', error);
+        Alert.error(status || '获取地图数据失败');
       }
   };
 
@@ -72,8 +66,8 @@ const BikeMapList = () => {
     getResult();
   }, []);
 
-  const filterSubmit = (params) => {
-    params = params;
+  const filterSubmit = (arg) => {
+    getResult(arg);
   }
 
   const initAMap = () => {
@@ -102,7 +96,6 @@ const BikeMapList = () => {
     if (!isMounted) return;
 
     try {
-      console.log('成功');
       setStatus('loading');
       await initAMap();
       if (!isMounted) return;
@@ -111,7 +104,10 @@ const BikeMapList = () => {
         setTimeout(() => {
           map = new window.AMap.Map(mapRef.current, {
             zoom: 11,
-            center: [116.397428, 39.90923]
+            center: [116.397428, 39.90923],
+            // 禁用一些可能触发日志的功能
+            resizeEnable: false,
+            animateEnable: false,
           });
           setMap(map);
           let gps1 = list[0].split(',');  //起点
@@ -180,7 +176,10 @@ const BikeMapList = () => {
             if (isMounted && window.AMap) {
               const map = new window.AMap.Map(mapRef.current, {
                 zoom: 13,
-                center: [116.397428, 39.90923]
+                center: [116.397428, 39.90923],
+                // 禁用一些可能触发日志的功能
+                resizeEnable: false,
+                animateEnable: false,
               });
               setMap(map);
             }
@@ -192,8 +191,6 @@ const BikeMapList = () => {
       isMounted = false;
     };
   }
-
-  if (loading) return <div>加载中...</div>;
 
   return (
      <div>
